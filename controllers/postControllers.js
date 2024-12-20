@@ -20,13 +20,48 @@ function index(req, res) {
 
 
 function show(req, res) {
-    const id = parseInt(req.params.id)
-    //res.send(`questo è il post con id: ${id}`)
-    const post = posts.find((post) => post.id === id)
-    console.log(post)
 
-    res.json(post)
+    const { id } = req.params
+
+    console.log('questo è il post con id:', id)
+
+    const sql = `
+	SELECT * 
+	FROM posts
+	WHERE id = ?
+	`
+
+    const sqlTags = `
+    SELECT t.* 
+    FROM tags AS t
+    JOIN post_tag AS pt
+    ON pt.post_id = t.id
+    WHERE pt.tag_id = ?
+    `
+
+    connection.query(sql, [id], (err, results) => {
+
+        if (err) {
+            res.status(500).json({ error: 'Database query failed' })
+        }
+
+        if (results.length === 0) {
+            res.status(404).json({ error: 'Post not found' })
+        }
+
+        const post = results[0]
+
+        connection.query(sqlTags, [id], (err, tags) => {
+            if (err) {
+                res.status(500).json({ error: 'Database query failed' })
+            } else {
+                post.tags = tags
+                res.json(post)
+            }
+        })
+    })
 }
+
 
 
 function store(req, res) {
@@ -123,14 +158,15 @@ function destroy(req, res) {
 
     const { id } = req.params
 
+
     const sql = 'DELETE FROM posts WHERE id = ?'
     connection.query(sql, [id], (err) => {
         if (err) {
             res.status(500).json({ error: 'Failed to delete posts' })
         } else {
             res.sendStatus(204)
+            console.log('hai eliminato correttamente il post con id:', id)
         }
-
     })
 }
 
