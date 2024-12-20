@@ -5,23 +5,17 @@ let lastIndex = posts.at(-1).id
 
 
 function index(req, res) {
-    //res.send('questi sono i post')
+    console.log('questi sono i post')
 
-    let filteredPosts = posts
+    const sql = `SELECT * FROM posts`
 
-    if (req.query.tag) {
-
-        console.log(`stai prendendo la ricetta con il seguente tag: ${req.query.tag}`)
-
-        filteredPosts = posts.filter((post) => {
-            return post.tags.includes(req.query.tag.toLowerCase())
-        })
-    }
-    console.log(filteredPosts)
-
-    const count = filteredPosts.length
-
-    res.json({ count, filteredPosts })
+    connection.query(sql, (err, results) => {
+        if (err) {
+            res.status(500).json({ error: 'Database query failed' })
+        } else {
+            res.json(results)
+        }
+    })
 }
 
 
