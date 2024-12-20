@@ -1,4 +1,6 @@
 const posts = require('../data/posts.js')
+const connection = require('../data/db.js')
+
 let lastIndex = posts.at(-1).id
 
 
