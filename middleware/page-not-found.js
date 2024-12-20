@@ -1,4 +1,4 @@
-function pageNotFound (req, res, next) {
+function pageNotFound(req, res, next) {
     console.log('pagina non trovata')
 
     res.status(404)

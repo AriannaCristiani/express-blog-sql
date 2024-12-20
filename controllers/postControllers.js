@@ -120,14 +120,18 @@ function modify(req, res) {
 
 
 function destroy(req, res) {
-    const id = parseInt(req.params.id)
-    //res.send(`stai eliminando il post con id: ${id}`)
 
-    const postIndex = posts.findIndex((post) => post.id === id)
+    const { id } = req.params
 
-    posts.splice(postIndex, 1)
+    const sql = 'DELETE FROM posts WHERE id = ?'
+    connection.query(sql, [id], (err) => {
+        if (err) {
+            res.status(500).json({ error: 'Failed to delete posts' })
+        } else {
+            res.sendStatus(204)
+        }
 
-    res.sendStatus(204)
+    })
 }
 
 
